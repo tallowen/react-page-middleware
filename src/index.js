@@ -44,14 +44,19 @@ var validateBuildConfig = function(buildConfig) {
       browserBuiltinsPath + ')' +
       ' but you have set `useBrowserBuiltins` to be true');
   }
-  // Substring/indexOf is actually a flawed way to infer folder hierarchy!
-  if (buildConfig.pageRouteRoot.indexOf(buildConfig.projectRoot) !== 0) {
+
+  if (!isSubfolder(buildConfig.pageRouteRoot, buildConfig.projectRoot)) {
     throw new Error('pageRouteRoot must be prefix of projectRoot');
   }
   if (!fs.existsSync(buildConfig.projectRoot)) {
     throw new Error('ERROR: No root:' + buildConfig.projectRoot);
   }
 };
+
+function isSubfolder(basePath, subfolderPath) {
+  var relativePath = path.relative(basePath, subfolderPath);
+  return relativePath.indexOf('..') === -1;
+}
 
 /**
  * TODO: We may need to call next here, if we want to allow something like a
